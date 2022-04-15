@@ -18,11 +18,11 @@ class MultiClassKernelPerceptron():
         kernelMatrix = np.zeros((nSamples, nSamples)) # Setting weights to zero
         for i in range(nSamples): # COSA FA ?
             for j in range(nSamples):
-                kernelMatrixTrain[i,j] = self.kernel(xTrain[i], xTrain[j], self.hyperparameters) # perchè hyperparameters ?
+                kernelMatrixTrain[i,j] = self.kernel(xTrain[i], xTrain[j], self.hyperparameters) # perch hyperparameters ?
         kernelMatrix = np.zeros((nSamples, len(xVal))) # sono diversi questi due parametri?
         for i in range(nSamples):
             for j in range(len(xVal)):
-                kernelMatrixVal[i,j] = self.kernel(xTrain[i], xVal[j], self.hyperparameters) # perchè hyperparameters ?
+                kernelMatrixVal[i,j] = self.kernel(xTrain[i], xVal[j], self.hyperparameters) # perch hyperparameters ?
 
         # Training models (each of 10 perceptrons)
         for x in self.perceptrons:

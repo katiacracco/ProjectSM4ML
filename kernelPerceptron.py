@@ -25,12 +25,12 @@ class KernelPerceptron():
         #    kernelMatrix = np.zeros((nSamples, nSamples)) # Setting weights to zero
         #    for i in range(nSamples): # COSA FA ?
         #        for j in range(nSamples):
-        #            kernelMatrixTrain[i,j] = self.kernel(xTrain[i], xTrain[j], self.hyperparameters) # perchè hyperparameters ?
+        #            kernelMatrixTrain[i,j] = self.kernel(xTrain[i], xTrain[j], self.hyperparameters) # perch hyperparameters ?
         #if kernelMatrixVal is None:
         #    kernelMatrix = np.zeros((nSamples, len(xVal))) # sono diversi questi due parametri?
         #    for i in range(nSamples):
         #        for j in range(len(xVal)):
-        #            kernelMatrixVal[i,j] = self.kernel(xTrain[i], xVal[j], self.hyperparameters) # perchè hyperparameters ?
+        #            kernelMatrixVal[i,j] = self.kernel(xTrain[i], xVal[j], self.hyperparameters) # perch hyperparameters ?
 
         # for each training point
         for tp in range(nSamples):
@@ -58,7 +58,7 @@ class KernelPerceptron():
         kernelMatrix = np.zeros((len(self.supportVectors), len(X))) # Setting weights to zero ??
         for i in range(len(self.supportVectors)): # COSA FA ?
             for j in range(len(X)):
-                kernelMatrixTrain[i,j] = self.kernel(self.supportVectors[i], X[j], self.hyperparameters) # perchè hyperparameters ?
+                kernelMatrixTrain[i,j] = self.kernel(self.supportVectors[i], X[j], self.hyperparameters) # perch hyperparameters ?
 
         # Calculating certainties [ALGORITHM]
         nSamples = kernelMatrix.shape[1]
@@ -69,5 +69,5 @@ class KernelPerceptron():
         return np.where(certainities > 0, self.classLabel, -1) if mapToClassLabels else certainties
 
 
-    def classify(self, labels): # confronta le etichette con quelle che dovrebbero essere corrette, cioè quelle della classe (?)
+    def classify(self, labels): # confronta le etichette con quelle che dovrebbero essere corrette, cioe quelle della classe (?)
         return np.where(labels == self.classLabel, 1, -1) # where assign 1 or -1 based on the condition (first parameter)
