@@ -29,7 +29,52 @@ def getDataset(data):
             "labelTrain": labels[divider:]
     }
 
-def getDataLoader(dataset):
+
+
+
+class DigitsDataset(Dataset):
+    def __init__(self, data, mode):
+        if mode == "train":
+            self.labels = data["labelTrain"]
+            self.imgs = data["imgTrain"]
+        if mode == "val":
+            self.labels = data["labelVal"]
+            self.imgs = data["imgVal"]
+
+    def __len__(self):
+        return len(self.labels)
+
+    def __getitem__(self, idx): # DA RIVEDERE
+        file = pd.read_csv("../dataset/mnist_train.csv")
+        #img_path = os.path.join(self.img_dir, self.img_labels.iloc[idx, 0])
+        imgPath = file.iloc[idx,1:]
+        image = read_image(imgPath)
+        #label = self.img_labels.iloc[idx, 0]
+        label = file.iloc[idx,0]
+        #if self.transform:
+        #    image = self.transform(image)
+        #if self.target_transform:
+        #    label = self.target_transform(label)
+        return image, label
+
+
+def getDataLoader(dataset, batch=64): # or 12 ?
+    data = {mode: DigitsDataset(data,mode) for mode in ["train", "val"]}
+
+    return {
+        "train": torch.utils.data.DataLoader(
+            data["train"],
+            batchSize=batch,
+            shuffle=True,
+            dropLast= True,
+        ),
+        "val": torch.utils.data.DataLoader(
+            data["val"],
+            batch_size=batch,
+            shuffle=False,
+            dropLast= True
+        )
+    }
 
 
 
@@ -55,18 +100,14 @@ if __name__ == '__main__':
     #plt.pause()
     #plt.close()
 
-"""
+
     for i in range(10):
         print("# Iteration {0}", i)
         MCKernelPerceptron = MultiClassKernelPerceptron(polynomialKernel, 3) # perch 3 ?
 
         # LOAD DATA
-        #data = getDataset(trainData)
-        #dataloaders = getDataLoader(data)
-        #trainDataLoader = torch.utils.data.DataLoader(trainData, batch_size=64, shuffle=True) # is necessario avere 3 dataloaders? train - val - test
-
-        #data = MnistDigits(data_fname).get_split_datasets()
-        #dataloaders = MnistDigitsPytorch.getDataLoader(data, batch_size=12)
+        data = getDataset(trainData)
+        dataloaders = getDataLoader(data)
 
         # Training model
         print("Training Kernel Perceptron")
@@ -80,4 +121,3 @@ if __name__ == '__main__':
 
         print("Results")
         print(yPred)
-"""
