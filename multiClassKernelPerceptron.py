@@ -15,6 +15,7 @@ class MultiClassKernelPerceptron():
             self.perceptrons.append(KernelPerceptron(label, self.kernel, self.hyperparameters))
 
         # Kernel matrix are same for all classes so calc once and pass around
+        nSamples = len(xTrain)
         kernelMatrix = np.zeros((nSamples, nSamples)) # Setting weights to zero
         for i in range(nSamples): # COSA FA ?
             for j in range(nSamples):
