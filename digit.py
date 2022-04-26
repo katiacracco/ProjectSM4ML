@@ -7,10 +7,10 @@ import matplotlib.pyplot as plt # like MATLAB
 import torch
 import sys
 
-
 def getDataset(data1, data2):
     # training data
     size = 1000
+    sizeTest = int(size/2)
     divider = int(size * 0.2) # 4000
 
     data1 = data1.sample(frac=1).reset_index(drop=True) # problema che mescoli train e val?
@@ -27,10 +27,10 @@ def getDataset(data1, data2):
 
     return {"imgVal": digits1[:divider],
             "imgTrain": digits1[divider:size],
-            "imgTest": digits2[:],
+            "imgTest": digits2[:sizeTest],
             "labelVal": labels1[:divider],
             "labelTrain": labels1[divider:size],
-            "labelTest": labels2[:]
+            "labelTest": labels2[:sizeTest]
     }
 
 
@@ -130,4 +130,5 @@ if __name__ == '__main__':
         yPred = MCKernelPerceptron.predict(data["imgTest"])
 
         print("Results")
-        print(yPred)
+        df = pd.DataFrame({"x": data["labelTest"], "y": yPred})
+        print(df)

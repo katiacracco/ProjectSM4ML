@@ -1,18 +1,7 @@
-from kernelPerceptron import KernelPerceptron
+from kernelPerceptron import KernelPerceptron, polynomialKernel
 
 import numpy as np
 
-# polynomial kernel to use predicting y
-def poly(X, Y, power):
-    m1,_ = X.shape
-    m2,_ = Y.shape
-    K = np.zeros((m1, m2))
-    for i in range(m1):
-        for j in range(m2):
-            #print("{0} {1}".format(i, j))
-            K[i,j] = (1 + np.dot(X[i].T, Y[j])) ** power # +1 va tolto?
-            #print(K[i,j])
-    return K
 
 
 # One vs all multi class kernel perceptron
@@ -28,10 +17,10 @@ class MultiClassKernelPerceptron():
 
         # Kernel matrix are same for all classes so calc once and pass around
 
-        kernelTrain = poly(xTrain.values, xTrain.values, self.hyperparameters)
+        kernelTrain = polynomialKernel(xTrain.values, xTrain.values, self.hyperparameters)
         print(kernelTrain)
 
-        kernelVal = poly(xTrain.values, xVal.values, self.hyperparameters)
+        kernelVal = polynomialKernel(xTrain.values, xVal.values, self.hyperparameters)
         print(kernelVal)
 
         # Training models (10 binary classifiers) - one vs all encoding
@@ -40,7 +29,7 @@ class MultiClassKernelPerceptron():
 
     def predict(self, X):
         # Each model gives certainty that image belongs to its class
-        perceptronCertainities = np.zeros(len(X), len(self.perceptrons))
+        perceptronCertainities = np.zeros((len(X), len(self.perceptrons))) # X rows - 10 cols
         for i, perceptron in enumerate(self.perceptrons):
             perceptronCertainities[:,i] = perceptron.predict(X, mapToClassLabels=False)
 
