@@ -8,63 +8,64 @@ class KernelPerceptron():
         self.hyperparameters = hyperparameters
 
     # Training Algorithm Perceptron
-    def train(self, xTrain, yTrain, xVal, yVal, kernelMatrixTrain=None, kernelMatrixVal=None):
+    def train(self, xTrain, yTrain, xVal, yVal, kernelTrain, kernelVal):
         print("... training ...")
 
         # Setting training variables
         nSamples, nFeatures = xTrain.shape
         weights = np.zeros(nSamples) # shape return the dimension of xTrain (?)
-        yTrain = self.classify(yTrain)
-        yVal = self.classify(yVal)
+        yTrain = self.classify(yTrain) # highlight the same labels as the current perceptron
+        yVal = self.classify(yVal) # 1 if label corresponds
         epochDone = 0 # epoch since val accuracy improvement
         bestVal = -1 # best val accuracy
         epoch = 0
+        S = []
+        y = 0
+        flag = True
 
-        # Calculating kernel matrices (if not given in function call)
-        #if kernelMatrixTrain is None:
-        #    kernelMatrix = np.zeros((nSamples, nSamples)) # Setting weights to zero
-        #    for i in range(nSamples): # COSA FA ?
-        #        for j in range(nSamples):
-        #            kernelMatrixTrain[i,j] = self.kernel(xTrain[i], xTrain[j], self.hyperparameters) # perch hyperparameters ?
-        #if kernelMatrixVal is None:
-        #    kernelMatrix = np.zeros((nSamples, len(xVal))) # sono diversi questi due parametri?
-        #    for i in range(nSamples):
-        #        for j in range(len(xVal)):
-        #            kernelMatrixVal[i,j] = self.kernel(xTrain[i], xVal[j], self.hyperparameters) # perch hyperparameters ?
+        while flag:
+            update = 0
 
-        # for each training point
-        for tp in range(nSamples):
-            # Predicting
-            yHat = 1 if np.sum(weights*kernelMatrixTrain[:,t]) > 0 else 0 # or -1 ?
-            # Updating weights
-            if yHat != yTrain[t]:
-                weights[t] += yTrain[t]
+            # This is ONE EPOCH - a full cycle through data (each training point)
+            for t in range(nSamples):
+                # Predicting
+                for s in S:
+                    #print(yTrain[s])
+                    #print(kernelTrain[s,t])
+                    #print(yTrain[s]*kernelTrain[s,t])
+                    y += yTrain[s]*kernelTrain[s,t]
+                yHat = 1 if y > 0 else -1
+                #yHat = 1 if np.sum(weights*kernelTrain[:,t]) > 0 else -1
+
+                # Updating weights
+                if yHat != yTrain[t]:
+                    weights[t] += yTrain[t]
+                    S.append(t)
+                    update += 1
+
+            # if in the last epoch there wew no unpdate, break
+            if update > 0:
+                flag = False
 
         # Non zero weights and corresponding training image stored in object
         self.savedWeights = weights[np.nonzero(weights)]
-        self.supportVectors = xTrain[np.nonzero(weights)]
+        self.supportVectors = xTrain.values[np.nonzero(weights)]
 
-# COSA VOGLIONO DIRE?
-#kernel_matrix = kernel_matrix + kernel_matrix.T - np.diag(kernel_matrix.diagonal())
-
-#for t in range(self.T):
-#    for i in range(n_samples):
-#        if np.sign(np.sum(K[:,i] * self.alpha * y)) != y[i]:
-#            self.alpha[i] += 1.0
+        # calcolare accurancy???
 
 
     def predict(self, X, mapToClassLabels = True):
         # Calculating kernel matrix
-        kernelMatrix = np.zeros((len(self.supportVectors), len(X))) # Setting weights to zero ??
+        kernel = np.zeros((len(self.supportVectors), len(X))) # Setting weights to zero ??
         for i in range(len(self.supportVectors)): # COSA FA ?
             for j in range(len(X)):
-                kernelMatrixTrain[i,j] = self.kernel(self.supportVectors[i], X[j], self.hyperparameters) # perch hyperparameters ?
+                kernelTrain[i,j] = self.kernel(self.supportVectors[i], X[j], self.hyperparameters) # perch hyperparameters ?
 
         # Calculating certainties [ALGORITHM]
-        nSamples = kernelMatrix.shape[1]
+        nSamples = kernel.shape[1]
         certainities = np.zeros(nSamples)
         for t in range(nSamples):
-            certainities[t] = np.sum(self.savedWeights*kernelMatrix[:, t])
+            certainities[t] = np.sum(self.savedWeights*kernel[:, t])
 
         return np.where(certainities > 0, self.classLabel, -1) if mapToClassLabels else certainties
 

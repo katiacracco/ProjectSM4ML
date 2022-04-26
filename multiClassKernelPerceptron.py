@@ -2,32 +2,41 @@ from kernelPerceptron import KernelPerceptron
 
 import numpy as np
 
+# polynomial kernel to use predicting y
+def poly(X, Y, power):
+    m1,_ = X.shape
+    m2,_ = Y.shape
+    K = np.zeros((m1, m2))
+    for i in range(m1):
+        for j in range(m2):
+            #print("{0} {1}".format(i, j))
+            K[i,j] = (1 + np.dot(X[i].T, Y[j])) ** power # +1 va tolto?
+            #print(K[i,j])
+    return K
+
+
 # One vs all multi class kernel perceptron
 class MultiClassKernelPerceptron():
-    def __init__(self, kernel, hyperparameters):
-        self.kernel = kernel
+    def __init__(self, hyperparameters): # se inserisco kernel in self evito di calcolarlo ogni volta?
         self.hyperparameters = hyperparameters
         self.perceptrons = []
 
     def train(self, xTrain, yTrain, xVal, yVal):
         # Creating one perceptron for each unique label (10 digits)
         for label in np.unique(yTrain):
-            self.perceptrons.append(KernelPerceptron(label, self.kernel, self.hyperparameters))
+            self.perceptrons.append(KernelPerceptron(label, self.hyperparameters))
 
         # Kernel matrix are same for all classes so calc once and pass around
-        nSamples = len(xTrain)
-        kernelMatrix = np.zeros((nSamples, nSamples)) # Setting weights to zero
-        for i in range(nSamples): # COSA FA ?
-            for j in range(nSamples):
-                kernelMatrixTrain[i,j] = self.kernel(xTrain[i], xTrain[j], self.hyperparameters) # perch hyperparameters ?
-        kernelMatrix = np.zeros((nSamples, len(xVal))) # sono diversi questi due parametri?
-        for i in range(nSamples):
-            for j in range(len(xVal)):
-                kernelMatrixVal[i,j] = self.kernel(xTrain[i], xVal[j], self.hyperparameters) # perch hyperparameters ?
 
-        # Training models (each of 10 perceptrons)
+        kernelTrain = poly(xTrain.values, xTrain.values, self.hyperparameters)
+        print(kernelTrain)
+
+        kernelVal = poly(xTrain.values, xVal.values, self.hyperparameters)
+        print(kernelVal)
+
+        # Training models (10 binary classifiers) - one vs all encoding
         for x in self.perceptrons:
-            x.train(xTrain, yTrain, xVal, yVal, kernelMatrixTrain, kernelMatrixVal)
+            x.train(xTrain, yTrain, xVal, yVal, kernelTrain, kernelVal)
 
     def predict(self, X):
         # Each model gives certainty that image belongs to its class

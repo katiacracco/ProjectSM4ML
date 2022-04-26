@@ -5,17 +5,13 @@ import numpy as np # mathematical functions
 import pandas as pd # data analysis - CSV file I/O ??
 import matplotlib.pyplot as plt # like MATLAB
 import torch
-
-
-# THIS IS THE KERNEL TO INITIALIZE FOR KERNEL PERCEPTRON
-def polynomialKernel(x, y, power):
-    return (np.dot(x, y.T) + 1) ** power
+import sys
 
 
 def getDataset(data1, data2):
     # training data
-    nSamples = data1.shape[0]
-    divider = int(nSamples * 0.2)
+    size = 1000
+    divider = int(size * 0.2) # 4000
 
     data1 = data1.sample(frac=1).reset_index(drop=True) # problema che mescoli train e val?
     #sh = data1.reindex(np.random.permutation(data1.index))
@@ -30,10 +26,10 @@ def getDataset(data1, data2):
     digits2 = data2.drop(['label'], axis=1)
 
     return {"imgVal": digits1[:divider],
-            "imgTrain": digits1[divider:],
+            "imgTrain": digits1[divider:size],
             "imgTest": digits2[:],
             "labelVal": labels1[:divider],
-            "labelTrain": labels1[divider:],
+            "labelTrain": labels1[divider:size],
             "labelTest": labels2[:]
     }
 
@@ -103,8 +99,6 @@ def getDataLoader(dataset): # or 12 ?
 if __name__ == '__main__':
     digitTrain = pd.read_csv("../dataset/mnist_train.csv") # type pandas.core.frame.DataFrame
     digitTest = pd.read_csv("../dataset/mnist_test.csv")
-    #print(digitTrain) # 60000 rows x 785 cols
-
 
     # plot some training data
 #    for i in range(9):
@@ -118,10 +112,9 @@ if __name__ == '__main__':
     #plt.pause()
     #plt.close()
 
-
     for i in range(1,10):
         print("# Iteration {0}".format(i))
-        MCKernelPerceptron = MultiClassKernelPerceptron(polynomialKernel, 3) # perch 3 ?
+        MCKernelPerceptron = MultiClassKernelPerceptron(3) # perch 3 ?
 
         # LOAD DATA
         data = getDataset(digitTrain, digitTest)
