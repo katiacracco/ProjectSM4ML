@@ -97,6 +97,12 @@ def getDataLoader(dataset): # or 12 ?
 
 
 if __name__ == '__main__':
+    A = np.array([[10, 11, 12],[13, 14, 15]])
+    print(A)
+    print(np.argmax(A))
+    print(np.argmax(A, axis=0))
+    print(np.argmax(A, axis=1))
+
     digitTrain = pd.read_csv("../dataset/mnist_train.csv") # type pandas.core.frame.DataFrame
     digitTest = pd.read_csv("../dataset/mnist_test.csv")
 
@@ -112,23 +118,34 @@ if __name__ == '__main__':
     #plt.pause()
     #plt.close()
 
-    for i in range(1,10):
-        print("# Iteration {0}".format(i))
-        MCKernelPerceptron = MultiClassKernelPerceptron(3) # perch 3 ?
+    #print("# Iteration {0}".format(i))
+    MCKernelPerceptron = MultiClassKernelPerceptron(3) # perch 3 ?
 
-        # LOAD DATA
-        data = getDataset(digitTrain, digitTest)
-        dataloaders = getDataLoader(data)
-        #print(data["imgTrain"])
+    # LOAD DATA
+    data = getDataset(digitTrain, digitTest)
+    dataloaders = getDataLoader(data)
+    #print(data["imgTrain"])
 
-        # Training model
-        print("Training Kernel Perceptron")
-        MCKernelPerceptron.train(data["imgTrain"], data["labelTrain"], data["imgVal"], data["labelVal"])
+    # Training model
+    print("Training Kernel Perceptron")
+    MCKernelPerceptron.train(data["imgTrain"], data["labelTrain"], data["imgVal"], data["labelVal"])
 
-        # Predicting with trained model
-        print("Predicting Kernel Perceptron")
-        yPred = MCKernelPerceptron.predict(data["imgTest"])
+    # Predicting with trained model
+    print("Predicting Kernel Perceptron")
+    yPred = MCKernelPerceptron.predict(data["imgTest"])
 
-        print("Results")
-        df = pd.DataFrame({"x": data["labelTest"], "y": yPred})
-        print(df)
+    print("Results")
+
+    testErr = 0
+    yTest = data["labelTest"].values
+    yHat = np.where(yPred > 0, 1, -1)
+
+    for i in range(len(yPred)):
+        out = yHat[i] - yTest[i]
+        testErr += out
+
+    print(testErr/len(yPred))
+
+    df = pd.DataFrame({"x": data["labelTest"], "y": yPred})
+    df_cond = df[df["x"] == df["y"]] # only correct predictions
+    print(df_cond)

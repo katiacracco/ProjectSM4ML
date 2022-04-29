@@ -23,18 +23,21 @@ class MultiClassKernelPerceptron():
         kernelVal = polynomialKernel(xTrain.values, xVal.values, self.hyperparameters)
         print(kernelVal)
 
+        # GET A BASTCH OF TRAINING DATA WITH ENUMERATE
         # Training models (10 binary classifiers) - one vs all encoding
         for x in self.perceptrons:
-            x.train(xTrain, yTrain, xVal, yVal, kernelTrain, kernelVal)
+            x.train(xTrain, yTrain, xVal, yVal, kernelTrain, kernelVal) # xTrain è sempre uguale o shuffle?
 
     def predict(self, X):
         # Each model gives certainty that image belongs to its class
-        perceptronCertainities = np.zeros((len(X), len(self.perceptrons))) # X rows - 10 cols
-        for i, perceptron in enumerate(self.perceptrons):
-            perceptronCertainities[:,i] = perceptron.predict(X, mapToClassLabels=False)
+        perceptronPredictions = np.zeros((len(X), len(self.perceptrons))) # X rows - 10 cols
+        for i, perceptron in enumerate(self.perceptrons): # i = 0,1,2,3..9
+            perceptronPredictions[:,i] = perceptron.predict(X, mapToClassLabels=False)
+            #print(perceptronPredictions[:,i])
 
         # Index of perceptron with max certainty
-        indexMaxCertainity = np.argmax(perceptronCertainities, axis = 1)
+        maxPrediction = np.argmax(perceptronPredictions, axis = 1) # argmax along cols, return argmax for every row
+        #print(maxPrediction)
 
-        # Return class label for most certain perceptron for each image
-        return np.array([self.perceptrons[i].classLabel for i in indexMaxCertainity])
+        # Return class label for most accurate prediction of perceptron for each image
+        return np.array([self.perceptrons[i].classLabel for i in maxPrediction])
