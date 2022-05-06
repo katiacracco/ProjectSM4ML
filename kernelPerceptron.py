@@ -12,6 +12,18 @@ def polynomialKernel(X, Y, power):
             #print(K[i,j])
     return K
 
+def prediction(kernel, alpha, y):
+    nSamples = kernel.shape[1]
+    predictions = np.zeros(nSamples)
+
+    for t in range(nSamples):
+        predictions[t] = np.sum(alpha*kernel[:,t]) # this is the prediction
+    #print(predictions)
+
+    # if prediction is > 0 then return the label ?
+    #return np.where(predictions > 0, self.classLabel, -1) if mapToClassLabels else predictions
+    return predictions
+
 
 # kernel perceptron is one perceptron - multi class kernel perceptron append all the kernel perceptrons
 class KernelPerceptron():
@@ -31,73 +43,63 @@ class KernelPerceptron():
         #epochDone = 0 # epoch since val accuracy improvement
         #bestVal = -1 # best val accuracy
         #epoch = 0
-        sum = 0
-        flag = True
+        print(yTrain)
 
-        #while flag:
         for count in range(5): # given number of epochs
-            #S = []
-            #sum = 0
-            #update = 0
-            #print(S)
-            trErr = 0
+            loss = 0
+            #trErr = 0
 
             # This is ONE EPOCH - a full cycle through data (each training point)
             for t in range(nSamples):
-                #print(alpha)
                 # Predicting
-                #for s in S:
-                    #print(yTrain[s])
-                    #print(kernelTrain[s,t])
-                    #print(yTrain[s]*kernelTrain[s,t])
-                #    sum += yTrain[s]*kernelTrain[s,t] # yTrain deve essere 0-1 o il valore dell'etichetta?
-                #yHat = 1 if sum > 0 else -1
                 yHat = 1 if np.sum(alpha*yTrain*kernelTrain[:,t]) > 0 else -1
                 #print(yTrain[t]) # 1 or -1
 
                 # Updating weights
                 if yHat != yTrain[t]:
                     alpha[t] += 1
-                    out = yHat - yTrain[t]
-                    trErr += out
-                    #weights[t] += yTrain[t] # WEIGHTS COSA DOVREBBERO RAPPRESENTARE ?
-                    #S.append(t)
-                    #update += 1
-            print(trErr/nSamples)
+                    loss += 1 # misclassified labels # da togliere, ottimizzare
 
 
-            # if in the last epoch there were no unpdate, break
-            #if update == 0:
-            #    flag = False
+            # Calculating epoch accuracy
+
+            # Zero-one loss function on training data
+            print("training accuracy")
+            trainingaccuracy = "{:.2f}".format(1 - (float(loss)/nSamples))
+            print(trainingaccuracy)
+
+            # accuracy calculated on validation set
+            print("validation accuracy")
+            yPred = np.where(prediction(kernelVal, alpha, yVal.values) > 0, 1, -1)
+            #yPred = np.where(prediction(kernelTrain, alpha) > 0, 1, -1)
+            #print(yPred)
+
+            #print(np.count_nonzero(yPred==yVal))
+            #print(len(yVal))
+            epochValaccuracy = np.count_nonzero(yPred==yVal) / float(len(yVal))
+            #epochValaccuracy = np.count_nonzero(yPred==yTrain) / float(len(yTrain))
+            print(epochValaccuracy)
+
+            #print("my training error") loss function
+            #print(trErr/nSamples)
+            print()
+
 
         # Non zero weights and corresponding training image stored in object
         self.alphaCounters = alpha[np.nonzero(alpha)]
         self.supportVectors = xTrain.values[np.nonzero(alpha)]
-        #self.alphaCounters = S
-        #self.supportVectors = xTrain.values[np.nonzero(S)]
-
-        print(self.alphaCounters)
+        #print(self.alphaCounters)
         #print(self.supportVectors)
 
-        # calcolare accurancy???
 
-
-    def predict(self, X, mapToClassLabels = True):
+    def predict(self, xTest, yTest):
         print("... predicting ...")
         # Calculating kernel matrix
-        kernel = polynomialKernel(self.supportVectors, X.values, self.hyperparameters)
-        #print(kernel)
+        kernelTest = polynomialKernel(self.supportVectors, xTest.values, self.hyperparameters)
+        #print(kernelTest)
 
-        # Calculating certainties [ALGORITHM]
-        nSamples = kernel.shape[1]
-        predictions = np.zeros(nSamples)
-        for t in range(nSamples):
-            predictions[t] = np.sum(self.alphaCounters*kernel[:, t]) # this is the prediction
-        #print(predictions)
-
-        # if prediction is >0 then return the label ?
-        #return np.where(predictions > 0, self.classLabel, -1) if mapToClassLabels else predictions
-        return predictions
+        # Calculating predicted y
+        return prediction(kernelTest, self.alphaCounters, yTest.values)
 
 
     def classify(self, labels): # confronta le etichette con quelle che dovrebbero essere corrette, cioe quelle della classe (?)

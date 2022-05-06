@@ -1,10 +1,8 @@
 from multiClassKernelPerceptron import MultiClassKernelPerceptron
 
-#import os
 import numpy as np # mathematical functions
 import pandas as pd # data analysis - CSV file I/O ??
 import matplotlib.pyplot as plt # like MATLAB
-import torch
 import sys
 
 def getDataset(data1, data2):
@@ -97,26 +95,8 @@ def getDataLoader(dataset): # or 12 ?
 
 
 if __name__ == '__main__':
-    A = np.array([[10, 11, 12],[13, 14, 15]])
-    print(A)
-    print(np.argmax(A))
-    print(np.argmax(A, axis=0))
-    print(np.argmax(A, axis=1))
-
     digitTrain = pd.read_csv("../dataset/mnist_train.csv") # type pandas.core.frame.DataFrame
     digitTest = pd.read_csv("../dataset/mnist_test.csv")
-
-    # plot some training data
-#    for i in range(9):
-#        img = np.asarray(digitTrain.iloc[i,1:].values.reshape((28,28)))
-        # asarray converts the input to an array
-        # iloc is a purely integer-location based indexing for selection by positio
-#        plt.subplot(3,3,i+1) # nrows, ncols, index
-#        plt.imshow(img, cmap = 'gray')
-#    plt.show()
-    # WANT TO END THE PROGRAM WITHOUT HAVING TO CLOSE MANUALLY THE IMAGE
-    #plt.pause()
-    #plt.close()
 
     #print("# Iteration {0}".format(i))
     MCKernelPerceptron = MultiClassKernelPerceptron(3) # perch 3 ?
@@ -132,19 +112,12 @@ if __name__ == '__main__':
 
     # Predicting with trained model
     print("Predicting Kernel Perceptron")
-    yPred = MCKernelPerceptron.predict(data["imgTest"])
+    yPred = MCKernelPerceptron.predict(data["imgTest"], data["labelTest"])
 
     print("Results")
-
-    testErr = 0
     yTest = data["labelTest"].values
-    yHat = np.where(yPred > 0, 1, -1)
-
-    for i in range(len(yPred)):
-        out = yHat[i] - yTest[i]
-        testErr += out
-
-    print(testErr/len(yPred))
+    accuracy = np.count_nonzero(yPred==yTest) / float(len(yTest))
+    print(accuracy)
 
     df = pd.DataFrame({"x": data["labelTest"], "y": yPred})
     df_cond = df[df["x"] == df["y"]] # only correct predictions
