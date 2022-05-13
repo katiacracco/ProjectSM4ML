@@ -27,7 +27,7 @@ def getDataset(data1, data2):
 
 def getDatasetPCA(data1, data2):
     # training data
-    data1 = data1.sample(frac=1).reset_index(drop=True) # shuffling
+    #data1 = data1.sample(frac=1).reset_index(drop=True) # shuffling
     labels1 = data1.label # <class 'pandas.core.series.Series'>
     digits1 = data1.drop(['label'], axis=1) # <class 'pandas.core.frame.DataFrame'>
     # test data
@@ -127,8 +127,8 @@ if __name__ == '__main__':
         #print(yPred.shape)
         #print(yPred)
 
-        occurrences = [np.count_nonzero(data["labelTest"] == i) for i in range(10)]
-        print(occurrences)
+        #occurrences = [np.count_nonzero(data["labelTest"] == i) for i in range(10)]
+        #print(occurrences)
 
         #df = pd.DataFrame({"x": data["labelTest"], "y1": yPred[0], "y2": yPred[1], "y3": yPred[2], "y4": yPred[3], "y5": yPred[4], "y6": yPred[5], "y7": yPred[6], "y8": yPred[7]})
 
@@ -155,8 +155,8 @@ if __name__ == '__main__':
                 V2[degree,c2] = error
                 accV2 += accuracy
                 c2 += 1
-            occ = [np.count_nonzero(yPred[i] == lab) for lab in range(10)]
-            print(occ)
+            #occ = [np.count_nonzero(yPred[i] == lab) for lab in range(10)]
+            #print(occ)
 
         print("Accuracy in version1 (predictors average): {:.2f}".format(accV1/int(n/2)))
         print("Accuracy in version2 (predictor achieving the smallest training error): {:.2f}".format(accV2/int(n/2)))

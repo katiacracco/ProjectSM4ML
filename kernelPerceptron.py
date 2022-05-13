@@ -27,23 +27,33 @@ class KernelPerceptron():
         # Setting training variables
         nSamples, _ = xTrain.shape
         alpha = np.zeros(nSamples)
-        error = np.zeros(nSamples)
-        yT = yTrain
         yTrain = self.classify(yTrain) # highlight the same labels as the current perceptron (1 if labels corresponds, or -1)
+
+        alphaScore = np.zeros(nSamples)
+        alphaMin = 0
+        error = int(np.sum(np.sign(alphaScore) != yTrain))
+        errorMin = error
 
         for epoch in range(1,self.epochNumber+1): # given number of epochs
 
             # This is ONE EPOCH - a full cycle through data (each training point)
             for t in range(nSamples):
                 # Predicting
-                yPred = np.sum(alpha*yTrain*kernelTrain[:,t])
-                yHat = 1 if yPred > 0 else -1
+                yHat = 1 if np.sum(alpha*yTrain*kernelTrain[:,t]) > 0 else -1
                 #print(yTrain[t]) # 1 or -1
 
                 # Updating weights
                 if yHat != yTrain[t]:
                     alpha[t] += 1
-                    #error[t] += yPred - yT[t]
+
+                    # SPOSTARE IN IF EPOCH%5
+                    alphaScore += yTrain[t]*kernelTrain[:,t]
+                    error = int(np.sum(np.sign(alphaScore) != yTrain))
+
+                    if error < errorMin:
+                        alphaMin = alpha[t]
+                        errorMin = error
+
 
             if epoch%5 == 0:
                 # predictors average
@@ -53,7 +63,7 @@ class KernelPerceptron():
 
                 #print(index)
                 #index, = np.where(oneD_array == 2)
-                self.statistics[1,int(epoch/5-1)] = alpha[index] # ma ha senso come valore?
+                self.statistics[1,int(epoch/5-1)] = alphaMin # ma ha senso come valore?
 
         #print(self.statistics)
 
