@@ -15,11 +15,11 @@ class MultiClassKernelPerceptron():
             self.perceptrons.append(KernelPerceptron(label, self.epochNumber, self.polynomialDegree))
 
         # Kernel matrix is the same for all classes so it is calculated once and pass around
-        kernelTrain = polynomialKernel(xTrain, xTrain, self.polynomialDegree)
+        kernelTrain = polynomialKernel(xTrain.values, xTrain.values, self.polynomialDegree)
 
         # Training models (10 binary classifiers)
         for x in self.perceptrons:
-            x.train(xTrain, yTrain, kernelTrain) # xTrain è sempre uguale o shuffle?
+            x.train(xTrain.values, yTrain.values, kernelTrain) # xTrain è sempre uguale o shuffle?
 
     def predict(self, xTest, yTest):
         interim = int(self.epochNumber/5)

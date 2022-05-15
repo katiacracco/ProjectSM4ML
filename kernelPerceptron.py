@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 def polynomialKernel(X, Y, polyDegree):
     m1,_ = X.shape
@@ -9,6 +10,15 @@ def polynomialKernel(X, Y, polyDegree):
             #print(i,j)
             K[i,j] = (1 + np.dot(X[i].T, Y[j])) ** polyDegree
     return K
+
+def shuffling(x,y):
+    df = pd.DataFrame(x)
+    df['label'] = y
+    df = df.sample(frac=1).reset_index(drop=True) # shuffling
+    y = df.label
+    x = df.drop(['label'], axis=1)
+
+    return x,y
 
 
 # kernel perceptron is one perceptron - multi class kernel perceptron append all the kernel perceptrons
@@ -29,10 +39,6 @@ class KernelPerceptron():
         alpha = np.zeros(nSamples)
         yTrain = self.classify(yTrain) # highlight the same labels as the current perceptron (1 if labels corresponds, or -1)
 
-        alphaScore = np.zeros(nSamples)
-        alphaMin = 0
-        error = int(np.sum(np.sign(alphaScore) != yTrain))
-        errorMin = error
 
         for epoch in range(1,self.epochNumber+1): # given number of epochs
 
@@ -46,14 +52,6 @@ class KernelPerceptron():
                 if yHat != yTrain[t]:
                     alpha[t] += 1
 
-                    # SPOSTARE IN IF EPOCH%5
-                    alphaScore += yTrain[t]*kernelTrain[:,t]
-                    error = int(np.sum(np.sign(alphaScore) != yTrain))
-
-                    if error < errorMin:
-                        alphaMin = alpha[t]
-                        errorMin = error
-
 
             if epoch%5 == 0:
                 # predictors average
@@ -63,7 +61,7 @@ class KernelPerceptron():
 
                 #print(index)
                 #index, = np.where(oneD_array == 2)
-                self.statistics[1,int(epoch/5-1)] = alphaMin # ma ha senso come valore?
+                self.statistics[1,int(epoch/5-1)] = alpha[index] # ma ha senso come valore?
 
         #print(self.statistics)
 
@@ -74,7 +72,7 @@ class KernelPerceptron():
     def predict(self, xTest, yTest):
         print("... predicting with perceptron {0} ...".format(self.classLabel))
         # Calculating kernel matrix
-        kernelTest = polynomialKernel(self.supportVectors, xTest, self.polynomialDegree)
+        kernelTest = polynomialKernel(self.supportVectors, xTest.values, self.polynomialDegree)
         #print(kernelTest)
 
         # Calculating predicted y

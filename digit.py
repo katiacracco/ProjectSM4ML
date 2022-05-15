@@ -6,28 +6,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 #import sys
 
-def getDataset(data1, data2):
+def applyPCA(data1, data2):
     # training data
-    size = 1000
-    data1 = data1.sample(frac=1).reset_index(drop=True) # shuffling
-    labels1 = data1.label # <class 'pandas.core.series.Series'>
-    digits1 = data1.drop(['label'], axis=1) # <class 'pandas.core.frame.DataFrame'>
-
-    # test data
-    sizeTest = int(size/6)
-    labels2 = data2.label
-    digits2 = data2.drop(['label'], axis=1)
-
-
-    return {"imgTrain": digits1[:size],
-            "imgTest": digits2[:sizeTest],
-            "labelTrain": labels1[:size],
-            "labelTest": labels2[:sizeTest]
-    }
-
-def getDatasetPCA(data1, data2):
-    # training data
-    #data1 = data1.sample(frac=1).reset_index(drop=True) # shuffling
     labels1 = data1.label # <class 'pandas.core.series.Series'>
     digits1 = data1.drop(['label'], axis=1) # <class 'pandas.core.frame.DataFrame'>
     # test data
@@ -45,13 +25,30 @@ def getDatasetPCA(data1, data2):
     #print(pca.n_components_)
     # apply transform to both training and test set
     digits1pca = pca.transform(digits1)
-    digits2pca = pca.transform(digits2)
+    digits2pca = pca.transform(digits2) # numpy.array
+
+    df1 = pd.DataFrame(digits1pca)
+    df1['label'] = labels1
+    df2 = pd.DataFrame(digits2pca)
+    df2['label'] = labels2
+
+    return df1, df2
+
+def getDataset(data1, data2):
+    # training data
+    data1 = data1.sample(frac=1).reset_index(drop=True) # shuffling
+    labels1 = data1.label # <class 'pandas.core.series.Series'>
+    digits1 = data1.drop(['label'], axis=1) # <class 'pandas.core.frame.DataFrame'>
+
+    # test data
+    labels2 = data2.label
+    digits2 = data2.drop(['label'], axis=1)
 
     size = 1000
     sizeTest = int(size/6)
 
-    return {"imgTrain": digits1pca[:size],
-            "imgTest": digits2pca[:sizeTest],
+    return {"imgTrain": digits1[:size],
+            "imgTest": digits2[:sizeTest],
             "labelTrain": labels1[:size],
             "labelTest": labels2[:sizeTest]
     }
@@ -100,8 +97,7 @@ if __name__ == '__main__':
     digitTest = pd.read_csv("../dataset/mnist_test.csv")
 
     ## Loading training set and test set
-    #data = getDataset(digitTrain, digitTest)
-    data = getDatasetPCA(digitTrain, digitTest)
+    dataTrain, dataTest = applyPCA(digitTrain, digitTest)
 
     epochNumber = 30
     polynomialDegree = 8
@@ -109,11 +105,13 @@ if __name__ == '__main__':
     V1 = np.zeros((polynomialDegree,int(epochNumber/5)))
     V2 = np.zeros((polynomialDegree,int(epochNumber/5)))
 
+
     for degree in range(polynomialDegree): #polynomialDegree
+        data = getDataset(dataTrain, dataTest)
+
         print("# Polynomial Degree: {0}".format(degree+1))
         MCKernelPerceptron = MultiClassKernelPerceptron(epochNumber, degree+1)
 
-        #shuffling(data)
         #occurrences = [np.count_nonzero(data["labelTrain"] == i) for i in range(10)]
         #print(occurrences)
 
