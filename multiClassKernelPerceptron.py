@@ -1,5 +1,6 @@
 from kernelPerceptron import KernelPerceptron, polynomialKernel
 
+import pandas as pd
 import numpy as np
 
 # One vs all multi class kernel perceptron
@@ -15,7 +16,12 @@ class MultiClassKernelPerceptron():
             self.perceptrons.append(KernelPerceptron(label, self.epochNumber, self.polynomialDegree))
 
         # Kernel matrix is the same for all classes so it is calculated once and pass around
-        kernelTrain = polynomialKernel(xTrain.values, xTrain.values, self.polynomialDegree)
+        # OPEN FILE WITH PRECALCULATED KERNEL
+        kernelTrain = pd.read_csv("k{0}.csv".format(self.polynomialDegree), header=None)
+        #print(kernelTrain)
+        kernelTrain = np.reshape(kernelTrain.values, (60000,60000)) 
+        print(kernelTrain)
+        #kernelTrain = polynomialKernel(xTrain.values, xTrain.values, self.polynomialDegree)
 
         # Training models (10 binary classifiers)
         for x in self.perceptrons:

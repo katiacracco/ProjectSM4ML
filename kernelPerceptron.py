@@ -37,6 +37,8 @@ class KernelPerceptron():
         # Setting training variables
         nSamples, _ = xTrain.shape
         alpha = np.zeros(nSamples)
+        error = np.zeros(nSamples)
+        y = yTrain
         yTrain = self.classify(yTrain) # highlight the same labels as the current perceptron (1 if labels corresponds, or -1)
 
 
@@ -45,22 +47,25 @@ class KernelPerceptron():
             # This is ONE EPOCH - a full cycle through data (each training point)
             for t in range(nSamples):
                 # Predicting
-                yHat = 1 if np.sum(alpha*yTrain*kernelTrain[:,t]) > 0 else -1
+                yPred = np.sum(alpha*yTrain*kernelTrain[:,t])
+                #print(yPred)
+                yHat = 1 if yPred > 0 else -1
                 #print(yTrain[t]) # 1 or -1
 
                 # Updating weights
                 if yHat != yTrain[t]:
                     alpha[t] += 1
 
+                error[t] += y[t] - yPred
+                #print(error)
+
 
             if epoch%5 == 0:
                 # predictors average
                 self.statistics[0,int(epoch/5-1)] = round(np.sum(alpha) / (nSamples*epoch),2)
                 # predictor achieving the smallest training error
-                index = np.argmin(alpha) #error
-
+                index = np.argmin(error)
                 #print(index)
-                #index, = np.where(oneD_array == 2)
                 self.statistics[1,int(epoch/5-1)] = alpha[index] # ma ha senso come valore?
 
         #print(self.statistics)
