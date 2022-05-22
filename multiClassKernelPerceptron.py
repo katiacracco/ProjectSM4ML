@@ -17,9 +17,9 @@ class MultiClassKernelPerceptron():
 
         # Kernel matrix is the same for all classes so it is calculated once and pass around
         # OPEN FILE WITH PRECALCULATED KERNEL
-        kernelTrain = pd.read_csv("k{0}.csv".format(self.polynomialDegree), header=None)
-        #print(kernelTrain)
-        kernelTrain = np.reshape(kernelTrain.values, (60000,60000)) 
+        kernelTrain = pd.read_csv("../input/k{0}.csv".format(self.polynomialDegree), header=None)
+        print(kernelTrain.shape)
+        kernelTrain = np.reshape(kernelTrain.values, (10000,10000))
         print(kernelTrain)
         #kernelTrain = polynomialKernel(xTrain.values, xTrain.values, self.polynomialDegree)
 

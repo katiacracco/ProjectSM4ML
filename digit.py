@@ -14,12 +14,13 @@ def getDataset(data1, data2):
     labels2 = data2.label
     digits2 = data2.drop(['label'], axis=1)
 
-    size = 1000
+    size = 1000 # spostare a 10000?
+
 
     return {"imgTrain": digits1[:size],
-            "imgTest": digits2,
+            "imgTest": digits2[:size],
             "labelTrain": labels1[:size],
-            "labelTest": labels2
+            "labelTest": labels2[:size]
     }
 
 def plotStats(x):
@@ -50,13 +51,13 @@ def plotStats(x):
 
 
 if __name__ == '__main__':
-    digitTrain = pd.read_csv("trainPCA.csv", index_col=0) # type pandas.core.frame.DataFrame
-    digitTest = pd.read_csv("testPCA.csv", index_col=0)
+    digitTrain = pd.read_csv("../input/trainPCA.csv", index_col=0) # type pandas.core.frame.DataFrame
+    digitTest = pd.read_csv("../input/testPCA.csv", index_col=0)
 
     ## Loading training set and test set
     data = getDataset(digitTrain, digitTest)
 
-    epochNumber = 30
+    epochNumber = 20
     polynomialDegree = 8
 
     V1 = np.zeros((polynomialDegree,int(epochNumber/5)))
