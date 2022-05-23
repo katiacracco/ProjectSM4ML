@@ -14,25 +14,20 @@ def getDataset(data1, data2):
     labels2 = data2.label
     digits2 = data2.drop(['label'], axis=1)
 
-    size = 1000 # spostare a 10000?
-
+    size = 2000
+    sizeTest = 2000
 
     return {"imgTrain": digits1[:size],
-            "imgTest": digits2[:size],
+            "imgTest": digits2[:sizeTest],
             "labelTrain": labels1[:size],
-            "labelTest": labels2[:size]
+            "labelTest": labels2[:sizeTest]
     }
 
 def plotStats(x):
-
-    #print(xAxis.shape)
-    #print(V1[0].shape)
-    #print(V1.shape)
     plt.figure(figsize=(20, len(x)))
     plt.subplot(1, 2, 1)
     for poly in range(V1.shape[0]):
         plt.plot(x, V1[poly], label='polynomial degree = {0}'.format(poly+1))
-    #plt.plot(x, V1[1], label='polynomial degree = 2')
     plt.xlabel('Number of epochs')
     plt.ylabel('Error values')
     plt.legend(loc='lower right')
@@ -41,7 +36,6 @@ def plotStats(x):
     plt.subplot(1, 2, 2)
     for poly in range(V2.shape[0]):
         plt.plot(x, V2[poly], label='polynomial degree = {0}'.format(poly+1))
-    #plt.plot(x, V2[1], label='polynomial degree = 2')
     plt.xlabel('Number of epochs')
     plt.ylabel('Error values')
     plt.legend(loc='lower right')
@@ -63,7 +57,6 @@ if __name__ == '__main__':
     V1 = np.zeros((polynomialDegree,int(epochNumber/5)))
     V2 = np.zeros((polynomialDegree,int(epochNumber/5)))
 
-
     for degree in range(polynomialDegree): #polynomialDegree
         print("# Polynomial Degree: {0}".format(degree+1))
         MCKernelPerceptron = MultiClassKernelPerceptron(epochNumber, degree+1)
@@ -78,20 +71,11 @@ if __name__ == '__main__':
         # Predicting with trained model
         print("Predicting Kernel Perceptron")
         yPred = MCKernelPerceptron.predict(data["imgTest"], data["labelTest"])
-        #print(yPred.shape)
-        #print(yPred)
-
-        #occurrences = [np.count_nonzero(data["labelTest"] == i) for i in range(10)]
-        #print(occurrences)
-
-        #df = pd.DataFrame({"x": data["labelTest"], "y1": yPred[0], "y2": yPred[1], "y3": yPred[2], "y4": yPred[3], "y5": yPred[4], "y6": yPred[5], "y7": yPred[6], "y8": yPred[7]})
 
         accV1 = 0
         accV2 = 0
 
         n,m = yPred.shape
-        #print(n) #8
-        #print(m) #500
         c1 = 0
         c2 = 0
 
@@ -109,8 +93,6 @@ if __name__ == '__main__':
                 V2[degree,c2] = error
                 accV2 += accuracy
                 c2 += 1
-            #occ = [np.count_nonzero(yPred[i] == lab) for lab in range(10)]
-            #print(occ)
 
         print("Accuracy in version1 (predictors average): {:.2f}".format(accV1/int(n/2)))
         print("Accuracy in version2 (predictor achieving the smallest training error): {:.2f}".format(accV2/int(n/2)))

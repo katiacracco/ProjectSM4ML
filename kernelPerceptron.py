@@ -37,7 +37,6 @@ class KernelPerceptron():
         # Setting training variables
         nSamples, _ = xTrain.shape
         alpha = np.zeros(nSamples)
-        y = yTrain
         yTrain = self.classify(yTrain) # highlight the same labels as the current perceptron (1 if labels corresponds, or -1)
 
         error = 0
@@ -46,75 +45,53 @@ class KernelPerceptron():
 
         self.average = np.zeros(self.interim)
         self.smallestErr = np.zeros((nSamples,self.interim))
-
+        self.alphaCounters = []
+        self.supportVectors = []
 
         for epoch in range(1,self.epochNumber+1): # given number of epochs
 
             # This is ONE EPOCH - a full cycle through data (each training point)
             for t in range(nSamples):
                 # Predicting
-                yPred = np.sum(alpha*yTrain*kernelTrain[:1000,t])
-                #print(yPred)
-                yHat = 1 if yPred > 0 else -1
-
+                yHat = 1 if np.sum(alpha*yTrain*kernelTrain[:2000,t]) > 0 else -1
                 # Updating weights
                 if yHat != yTrain[t]:
                     alpha[t] += 1
 
-
-            #error[t] = y[t] - yPred
             error = np.sum(alpha) / (nSamples*epoch)
-            #print("error")
-            #print(error)
-            #print(errorMin)
-            #print()
-
-
             if error < errorMin:
                 errorMin = error
                 alphaMin = alpha
-            #print(error)
-
 
             if epoch%5 == 0:
                 # predictors average
                 self.average[int(epoch/5-1)] = round(np.sum(alpha) / (nSamples*epoch),2)
-
                 # predictor achieving the smallest training error
-                #index = np.argmin(error)
-                #print(index)
                 self.smallestErr[:,int(epoch/5-1)] = alphaMin
-                print(alphaMin[np.nonzero(alphaMin)].shape)
-                print(alphaMin)
-
-        print(self.average)
-        print(self.smallestErr)
+                self.alphaCounters.append(alphaMin[np.nonzero(alphaMin)])
+                self.supportVectors.append(xTrain[np.nonzero(alphaMin)])
 
         # Non zero weights and corresponding training image stored in object
-        self.alphaCounters = alphaMin[np.nonzero(alphaMin)]
-        self.supportVectors = xTrain[np.nonzero(alphaMin)]
+        #self.alphaCounters = alphaMin[np.nonzero(alphaMin)]
+        #self.supportVectors = xTrain[np.nonzero(alphaMin)]
 
     def predict(self, xTest, yTest):
         print("... predicting with perceptron {0} ...".format(self.classLabel))
         # Calculating kernel matrix
-        kernelTest = polynomialKernel(self.supportVectors, xTest.values, self.polynomialDegree)
-        #print(kernelTest)
+        kernelTest = []
+        for i in range(len(self.supportVectors)):
+            kernelTest.append(polynomialKernel(self.supportVectors[i], xTest.values, self.polynomialDegree))
 
         # Calculating predicted y
-        nSamples = kernelTest.shape[1]
+        nSamples = len(xTest)
         predictions = np.zeros((2,self.interim,nSamples))
-        #pred = np.zeros(nSamples)
 
         for t in range(nSamples):
-            #pred[t] = np.sum(self.alphaCounters*kernelTest[:,t]) # this is the prediction
             for i in range(self.interim):
                 # predictions using predictors average
-                predictions[0,i,t] = np.sum(self.average[i]*kernelTest[:,t])
+                predictions[0,i,t] = np.sum(self.average[i]*kernelTest[i][:,t])
                 # predictions using predictor achieving the smallest training error
-                #predictions[1,i,t] = np.sum(self.smallestErr[:,i]*kernelTest[:,t])
-                predictions[1,i,t] = np.sum(self.alphaCounters*kernelTest[:,t])
-
-        #print(predictions)
+                predictions[1,i,t] = np.sum(self.alphaCounters[i]*kernelTest[i][:,t]) # use smallestErr!!!!
 
         return predictions
 

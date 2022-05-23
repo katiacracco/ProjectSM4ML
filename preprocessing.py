@@ -31,12 +31,12 @@ def applyPCA(data1, data2):
     # creating a file with PCA training set
     df1 = pd.DataFrame(digits1pca[:size])
     df1['label'] = labels1[:size]
-    df1.to_csv('trainPCA.csv')
+    #df1.to_csv('trainPCA.csv')
 
     # creating a file with PCA test set
     df2 = pd.DataFrame(digits2pca)
     df2['label'] = labels2
-    df1.to_csv('testPCA.csv')
+    #df1.to_csv('testPCA.csv')
 
     return {"imgTrain": digits1pca[:size],
         "imgTest": digits2pca,
@@ -68,8 +68,10 @@ if __name__ == '__main__':
         print(i)
         #kernelTrain = polyKernel(data["imgTrain"], data["imgTrain"], i+1)
         #np.savetxt('k{0}.csv'.format(i+1), kernelTrain, delimiter='\n')
-        kernelTest = polyKernel(data["imgTest"], data["imgTest"], i+1)
-        np.savetxt('k{0}.csv'.format(i+1), kernelTest, delimiter='\n')
+        #kernelTest = polyKernel(data["imgTrain"], data["imgTest"], i+1)
+        #np.savetxt('kTest{0}.csv'.format(i+1), kernelTest, delimiter='\n')
+    kernelTest = polyKernel(data["imgTrain"], data["imgTest"], 1)
+    np.savetxt('kTest.csv', kernelTest, delimiter='\n')
 
 
     #ot = pd.read_csv("k1.csv")

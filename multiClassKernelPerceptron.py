@@ -16,12 +16,8 @@ class MultiClassKernelPerceptron():
             self.perceptrons.append(KernelPerceptron(label, self.epochNumber, self.polynomialDegree))
 
         # Kernel matrix is the same for all classes so it is calculated once and pass around
-        # OPEN FILE WITH PRECALCULATED KERNEL
         kernelTrain = pd.read_csv("../input/k{0}.csv".format(self.polynomialDegree), header=None)
-        print(kernelTrain.shape)
         kernelTrain = np.reshape(kernelTrain.values, (10000,10000))
-        print(kernelTrain)
-        #kernelTrain = polynomialKernel(xTrain.values, xTrain.values, self.polynomialDegree)
 
         # Training models (10 binary classifiers)
         for x in self.perceptrons:
@@ -34,9 +30,6 @@ class MultiClassKernelPerceptron():
         # Each model gives the certainty that an image belongs to its class
         for i, perceptron in enumerate(self.perceptrons): # i = 0,1,2,3..9
             perceptronPredictions[:,:,:,i] = perceptron.predict(xTest, yTest)
-        #print(perceptronPredictions.shape)
-        #print(perceptronPredictions)
-
 
         maxPrediction = np.zeros((2,len(xTest),interim))
 
@@ -44,8 +37,6 @@ class MultiClassKernelPerceptron():
         for version in range(2):
             for inter in range(interim):
                 maxPrediction[version,:,inter] = np.argmax(perceptronPredictions[version,inter,:,:], axis = 1) # argmax along cols, return argmax for every row
-        #print(maxPrediction.shape)
-        #print(maxPrediction)
 
         # Return class label for most accurate prediction of perceptron for each image
         return np.array([[self.perceptrons[int(a)].classLabel for a in maxPrediction[i,:,j]]
