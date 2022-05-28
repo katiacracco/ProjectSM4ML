@@ -21,14 +21,14 @@ class MultiClassKernelPerceptron():
 
         # Training models (10 binary classifiers)
         for x in self.perceptrons:
-            x.train(xTrain.values, yTrain.values, kernelTrain) # xTrain è sempre uguale o shuffle?
+            x.train(xTrain.values, yTrain.values, kernelTrain)
 
     def predict(self, xTest, yTest):
         interim = int(self.epochNumber/5)
         perceptronPredictions = np.zeros((2,interim,len(xTest),len(self.perceptrons)))
 
         # Each model gives the certainty that an image belongs to its class
-        for i, perceptron in enumerate(self.perceptrons): # i = 0,1,2,3..9
+        for i, perceptron in enumerate(self.perceptrons):
             perceptronPredictions[:,:,:,i] = perceptron.predict(xTest, yTest)
 
         maxPrediction = np.zeros((2,len(xTest),interim))
@@ -36,7 +36,7 @@ class MultiClassKernelPerceptron():
         # Index/label of perceptron with max certainty
         for version in range(2):
             for inter in range(interim):
-                maxPrediction[version,:,inter] = np.argmax(perceptronPredictions[version,inter,:,:], axis = 1) # argmax along cols, return argmax for every row
+                maxPrediction[version,:,inter] = np.argmax(perceptronPredictions[version,inter,:,:], axis = 1)
 
         # Return class label for most accurate prediction of perceptron for each image
         return np.array([[self.perceptrons[int(a)].classLabel for a in maxPrediction[i,:,j]]
