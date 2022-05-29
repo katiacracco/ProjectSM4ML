@@ -16,7 +16,7 @@ class MultiClassKernelPerceptron():
             self.perceptrons.append(KernelPerceptron(label, self.epochNumber, self.polynomialDegree))
 
         # Kernel matrix is the same for all classes so it is calculated once and pass around
-        kernelTrain = pd.read_csv("../input/k{0}.csv".format(self.polynomialDegree), header=None)
+        kernelTrain = pd.read_csv("k{0}.csv".format(self.polynomialDegree), header=None)
         kernelTrain = np.reshape(kernelTrain.values, (10000,10000))
 
         # Training models (10 binary classifiers)

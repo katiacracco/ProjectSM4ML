@@ -31,7 +31,7 @@ def plotStats(x):
     plt.xlabel('Number of epochs')
     plt.ylabel('Error values')
     plt.legend(loc='upper left')
-    plt.title('Perceptrons average')
+    plt.title('Perceptrons\' average')
 
     plt.subplot(1, 2, 2)
     for poly in range(V2.shape[0]):
@@ -45,8 +45,8 @@ def plotStats(x):
 
 
 if __name__ == '__main__':
-    digitTrain = pd.read_csv("../input/trainPCA.csv", index_col=0)
-    digitTest = pd.read_csv("../input/testPCA.csv", index_col=0)
+    digitTrain = pd.read_csv("input/trainPCA.csv", index_col=0)
+    digitTest = pd.read_csv("input/testPCA.csv", index_col=0)
 
     ## Loading training set and test set
     data = getDataset(digitTrain, digitTest)
@@ -98,7 +98,7 @@ if __name__ == '__main__':
                 accV2 += accuracy
                 c2 += 1
 
-            occ.append([np.count_nonzero(yPred[i] == j) for j in range(10)])
+            #occ.append([np.count_nonzero(yPred[i] == j) for j in range(10)])
 
         # calculating the accuracy of each version for every polynomial degree
         accuracyV1 += accV1/int(n/2)

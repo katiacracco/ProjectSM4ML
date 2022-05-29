@@ -54,8 +54,8 @@ def polyKernel(X, Y, polyDegree):
     return K
 
 if __name__ == '__main__':
-    digitTrain = pd.read_csv("../dataset/mnist_train.csv")
-    digitTest = pd.read_csv("../dataset/mnist_test.csv")
+    digitTrain = pd.read_csv("dataset/mnist_train.csv")
+    digitTest = pd.read_csv("dataset/mnist_test.csv")
 
     # loading training set and test set
     data = applyPCA(digitTrain, digitTest)
