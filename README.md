@@ -4,6 +4,9 @@ Digit Classification with Kernel Perceptron
 
 Author: Katia Cracco
 
+Project developed for Statistical Methods for Machine Learning Course
+
+
 preprocessing.py: this file pre-processes the dataset present in the dataset folder (zipped) by generating the files present in the input folder (zipped); 
   it also generates polynomial kernels which have not been loaded because they are too heavy.
   
