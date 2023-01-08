@@ -1,8 +1,6 @@
 # ProjectSM4ML
 
-Digit Classification with Kernel Perceptron
-
-Author: Katia Cracco
+Digit Classification with Kernel Perceptron - Author: Katia Cracco
 
 Project developed for Statistical Methods for Machine Learning Course
 
