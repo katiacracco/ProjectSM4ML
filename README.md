@@ -1,6 +1,7 @@
 # ProjectSM4ML
 
 Digit Classification with Kernel Perceptron
+
 Author: Katia Cracco
 
 preprocessing.py: this file pre-processes the dataset present in the dataset folder (zipped) by generating the files present in the input folder (zipped); 
